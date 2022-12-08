@@ -12,7 +12,7 @@ let getcoins=async function(req,res){
         authorization:header
      }
     let result=await axios(option)
-    console.log(result.data)
+    //console.log(result.data)
     const result1=result.data.data
     const rsl=result1.sort((a, b)=>{
         const {changePercent24Hr:p1}=a
@@ -25,13 +25,15 @@ let getcoins=async function(req,res){
     console.log(result1.length)
    
     await coinsModel.deleteMany()
-    await coinsModel.create(rsl)
-    console.log(rsl.length)
-   // const getdata=await coinsModel.find()
+    
+    //console.log(rsl.length)
+   
    let getone=[]
    for(let i=0; i<rsl.length; i++)
-    { let getone1=await coinsModel.findOneAndUpdate({name:rsl[i].name},{$set:{marketCapUsd:rsl[i].marketCapUsd}},{upsert:true,new:true}).lean()
-    getone1.changePercent24Hr=rsl[i].changePercent24Hr
+    { 
+        let obj={name:rsl[i].name,symbol:rsl[i].symbol,priceUsd:rsl[i].priceUsd}
+        let getone1=await coinsModel.findOneAndUpdate(obj,{$set:{marketCapUsd:rsl[i].marketCapUsd}},{upsert:true,new:true}).lean()
+      getone1.changePercent24Hr=rsl[i].changePercent24Hr
      getone.push(getone1)
    }
     return res.status(200).send({getone})
@@ -40,11 +42,7 @@ let getcoins=async function(req,res){
     
 }
 
-const gettest= function(req,res){
-    console.log("hello world")
-    return res.send("hello world")
-}
 
-module.exports.gettest=gettest
+
 module.exports.getcoins=getcoins
 
