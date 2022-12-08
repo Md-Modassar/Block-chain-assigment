@@ -26,8 +26,15 @@ let getcoins=async function(req,res){
    
     await coinsModel.deleteMany()
     await coinsModel.create(rsl)
-    const getdata=await coinsModel.find()
-    return res.status(200).send({getdata})
+    console.log(rsl.length)
+   // const getdata=await coinsModel.find()
+   let getone=[]
+   for(let i=0; i<rsl.length; i++)
+    { let getone1=await coinsModel.findOneAndUpdate({name:rsl[i].name},{$set:{marketCapUsd:rsl[i].marketCapUsd}},{upsert:true,new:true}).lean()
+    getone1.changePercent24Hr=rsl[i].changePercent24Hr
+     getone.push(getone1)
+   }
+    return res.status(200).send({getone})
 }catch(err){return res.status(500).send({status:false,msg:err.message})}
    
     
